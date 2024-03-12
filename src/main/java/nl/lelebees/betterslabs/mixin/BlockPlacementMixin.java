@@ -39,8 +39,8 @@ public class BlockPlacementMixin {
             stateIdBuilder.append(string).append("=");
         }
 
-        blockState.stringId = stateIdBuilder.toString();
-        blockState = BlockState.getInstance(blockState.getSaveKey());
+        String saveKey = blockState.getBlockId() + "[" + stateIdBuilder + "]";
+        blockState = BlockState.getInstance(saveKey);
         blockStateLocalRef.set(blockState);
     }
 
