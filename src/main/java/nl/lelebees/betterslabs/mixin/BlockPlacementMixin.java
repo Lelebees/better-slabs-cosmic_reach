@@ -16,8 +16,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Arrays;
-
 import static nl.lelebees.betterslabs.extras.Direction.*;
 
 @Mixin(BlockSelection.class)
@@ -29,25 +27,21 @@ public class BlockPlacementMixin {
         if (!blockState.stringId.contains("vertical")) {
             return;
         }
-
-        Entity playerEntity = InGame.getLocalPlayer().getEntity();
-        double yaw = -Math.atan2(playerEntity.viewDirection.x, playerEntity.viewDirection.z) / Math.PI * 180.0;
-        String newOrientation = getOrientation(yaw);
+        String newOrientation = getOrientation();
 
         String[] blockStateId = blockState.stringId.split("=");
         StringBuilder stateIdBuilder = new StringBuilder();
-        Arrays.stream(blockStateId).forEach(string -> {
+        for (String string : blockStateId) {
             if (string.equals(blockStateId[blockStateId.length - 1])) {
                 stateIdBuilder.append(newOrientation);
-                return;
+                continue;
             }
             stateIdBuilder.append(string).append("=");
-        });
+        }
 
         blockState.stringId = stateIdBuilder.toString();
         blockState = BlockState.getInstance(blockState.getSaveKey());
         blockStateLocalRef.set(blockState);
-        // TODO: prevent multiple vertical slab orientations from showing up. just use the same one :)
     }
 
     @Unique
@@ -62,7 +56,9 @@ public class BlockPlacementMixin {
     }
 
     @Unique
-    private String getOrientation(double yaw) {
+    private String getOrientation() {
+        Entity playerEntity = InGame.getLocalPlayer().getEntity();
+        double yaw = -Math.atan2(playerEntity.viewDirection.x, playerEntity.viewDirection.z) / Math.PI * 180.0;
         return calculateDirection(yaw).getOrientation();
     }
 
