@@ -4,7 +4,8 @@
   "package": "nl.lelebees.betterslabs.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "BlockPlacementMixin"
+    "BlockPlacementMixin",
+    "ItemCatalogMixin"
   ],
   "client": [],
   "server": [],
