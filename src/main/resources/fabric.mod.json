@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "${modid}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "description": "Better slabs for Cosmic Reach!",
+  "authors": [
+    "Lelebees"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "nl.lelebees.betterslabs.BetterSlabsMod"
+    ]
+  },
+  "mixins": [
+    "betterslabs.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "cosmic_reach": ">=${cosmicreach_version}"
+  }
+}
