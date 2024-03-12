@@ -9,6 +9,7 @@ import finalforeach.cosmicreach.world.BlockSelection;
 import finalforeach.cosmicreach.world.World;
 import finalforeach.cosmicreach.world.blocks.BlockState;
 import finalforeach.cosmicreach.world.entities.Entity;
+import nl.lelebees.betterslabs.extras.Direction;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,6 +17,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Arrays;
+
+import static nl.lelebees.betterslabs.extras.Direction.*;
 
 @Mixin(BlockSelection.class)
 public class BlockPlacementMixin {
@@ -48,26 +51,19 @@ public class BlockPlacementMixin {
     }
 
     @Unique
-    private String calculateDirection(double yaw) {
+    private Direction calculateDirection(double yaw) {
         if (yaw < -135.0 || yaw > 135.0) {
-            return "west";
+            return WEST;
         }
         if (yaw < -45.0) {
-            return "south";
+            return SOUTH;
         }
-        return yaw < 45.0 ? "east" : "north";
+        return yaw < 45.0 ? EAST : NORTH;
     }
 
     @Unique
     private String getOrientation(double yaw) {
-        String direction = calculateDirection(yaw);
-        return switch (direction) {
-            case "north" -> "verticalNegX";
-            case "south" -> "verticalPosX";
-            case "east" -> "verticalPosZ";
-            case "west" -> "verticalNegZ";
-            default -> throw new IllegalStateException("Unexpected value: " + direction);
-        };
+        return calculateDirection(yaw).getOrientation();
     }
 
 }
