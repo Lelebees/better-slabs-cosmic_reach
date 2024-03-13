@@ -10,6 +10,6 @@ public class BetterSlabsMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Running Lele's BetterSlabs v0.1.2!");
+        LOGGER.info("Running Lele's BetterSlabs v0.2.0!");
     }
 }
