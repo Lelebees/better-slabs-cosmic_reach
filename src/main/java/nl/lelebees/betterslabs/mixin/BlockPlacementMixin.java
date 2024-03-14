@@ -20,7 +20,7 @@ public class BlockPlacementMixin {
     @Inject(method = "placeBlock", at = @At("HEAD"))
     private void injected(World world, BlockState targetBlockState, BlockPosition blockPos, double timeSinceLastInteract, CallbackInfo ci, @Local LocalRef<BlockState> blockStateLocalRef) {
         BlockState blockState = blockStateLocalRef.get();
-        if (!blockState.stringId.contains("vertical")) {
+        if (!blockState.stringId.contains("type=vertical")) {
             return;
         }
         String newOrientation = ViewDirection.getViewDirection(InGame.getLocalPlayer().getEntity()).getOrientation();

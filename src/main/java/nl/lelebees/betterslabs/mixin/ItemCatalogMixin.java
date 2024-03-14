@@ -6,6 +6,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.ui.ItemCatalog;
 import finalforeach.cosmicreach.world.blocks.BlockState;
+import nl.lelebees.betterslabs.extras.ViewDirection;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -14,7 +15,7 @@ public class ItemCatalogMixin {
 
     @WrapOperation(method = "<init>", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/ui/ItemCatalog;addItemStack(Lfinalforeach/cosmicreach/items/ItemStack;)Z"))
     private boolean excludeMultipleVerticalSlabs(ItemCatalog instance, ItemStack itemStack, Operation<Boolean> original, @Local BlockState state) {
-        if (state.stringId.contains("slab_type=vertical") && !state.stringId.contains("verticalNegZ")) {
+        if (state.stringId.contains("type=vertical") && !state.stringId.contains(ViewDirection.WEST.getOrientation())) {
             return false;
         }
         return original.call(instance, itemStack);
