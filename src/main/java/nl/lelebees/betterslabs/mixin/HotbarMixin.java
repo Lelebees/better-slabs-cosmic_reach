@@ -10,28 +10,18 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static nl.lelebees.betterslabs.extras.LeleUtil.changeState;
+
 @Mixin(Hotbar.class)
 public class HotbarMixin {
 
     @Inject(method = "pickBlock", at = @At("HEAD"))
-    private void blockSlabPicks(BlockState blockState, CallbackInfo ci, @Local LocalRef<BlockState> blockStateLocalRef) {
+    private void blockSlabPicks(BlockState blockState, CallbackInfo ci, @Local(argsOnly = true) LocalRef<BlockState> blockStateLocalRef) {
         BlockState targetBlock = blockStateLocalRef.get();
         if (!targetBlock.stringId.contains("type=vertical")) {
             return;
         }
-        String orientation = ViewDirection.WEST.getOrientation();
-        // TODO: YAY! reusable code!
-        String[] blockStateId = targetBlock.stringId.split("=");
-        StringBuilder stateIdBuilder = new StringBuilder();
-        for (String string : blockStateId) {
-            if (string.equals(blockStateId[blockStateId.length - 1])) {
-                stateIdBuilder.append(orientation);
-                continue;
-            }
-            stateIdBuilder.append(string).append("=");
-        }
-        String saveKey = targetBlock.getBlockId() + "[" + stateIdBuilder + "]";
-        targetBlock = BlockState.getInstance(saveKey);
-        blockStateLocalRef.set(targetBlock);
+        String orientation = "vertical" + ViewDirection.WEST.getOrientation();
+        blockStateLocalRef.set(changeState(targetBlock, orientation));
     }
 }

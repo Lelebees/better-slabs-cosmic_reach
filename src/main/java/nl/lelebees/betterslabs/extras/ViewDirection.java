@@ -6,10 +6,12 @@ import finalforeach.cosmicreach.world.entities.Entity;
 import static finalforeach.cosmicreach.world.Direction.*;
 
 public enum ViewDirection {
-    NORTH("verticalNegX", NEG_X),
-    SOUTH("verticalPosX", POS_X),
-    EAST("verticalPosZ", POS_Z),
-    WEST("verticalNegZ", NEG_Z);
+    NORTH("NegX", NEG_X),
+    SOUTH("PosX", POS_X),
+    EAST("PosZ", POS_Z),
+    WEST("NegZ", NEG_Z),
+    UP("PosY", POS_Y),
+    DOWN("NegY", NEG_Y);
 
     private final String orientation;
     private final Direction direction;
