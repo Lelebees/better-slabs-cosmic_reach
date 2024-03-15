@@ -31,7 +31,7 @@ public class BlockPlacementMixin {
         String newOrientation = "vertical" + ViewDirection.getViewDirection(InGame.getLocalPlayer().getEntity()).getOrientation();
         blockStateLocalRef.set(fetchNewState(blockState, newOrientation));
     }
-    
+
     @WrapOperation(method = "raycast", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/BlockSelection;placeBlock(Lfinalforeach/cosmicreach/world/World;Lfinalforeach/cosmicreach/world/blocks/BlockState;Lfinalforeach/cosmicreach/world/BlockPosition;D)V"))
     private void horizontalSlabs(BlockSelection instance, World world, BlockState targetBlockState, BlockPosition targetBlockPos, double timeSinceBlockModify, Operation<Void> original, @Local(name = "breakingBlockPos") BlockPosition selectedBlockPosition) {
         // TODO: If the face is side, place the slab corresponding to the half of the face the player is looking at (top half > top slab, bottom half > bottom slab)
