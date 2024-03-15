@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static nl.lelebees.betterslabs.extras.LeleUtil.changeState;
+import static nl.lelebees.betterslabs.extras.LeleUtil.fetchNewState;
 
 @Mixin(Hotbar.class)
 public class HotbarMixin {
@@ -22,6 +22,6 @@ public class HotbarMixin {
             return;
         }
         String orientation = "vertical" + ViewDirection.WEST.getOrientation();
-        blockStateLocalRef.set(changeState(targetBlock, orientation));
+        blockStateLocalRef.set(fetchNewState(targetBlock, orientation));
     }
 }

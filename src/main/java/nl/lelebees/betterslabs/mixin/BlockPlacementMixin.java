@@ -11,11 +11,12 @@ import finalforeach.cosmicreach.world.World;
 import finalforeach.cosmicreach.world.blocks.BlockState;
 import nl.lelebees.betterslabs.extras.ViewDirection;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static nl.lelebees.betterslabs.extras.LeleUtil.changeState;
+import static nl.lelebees.betterslabs.extras.LeleUtil.fetchNewState;
 
 @Mixin(BlockSelection.class)
 public class BlockPlacementMixin {
@@ -28,7 +29,7 @@ public class BlockPlacementMixin {
         }
         String newOrientation = "vertical" + ViewDirection.getViewDirection(InGame.getLocalPlayer().getEntity()).getOrientation();
 
-        blockStateLocalRef.set(changeState(blockState, newOrientation));
+        blockStateLocalRef.set(fetchNewState(blockState, newOrientation));
     }
 
 
@@ -43,28 +44,28 @@ public class BlockPlacementMixin {
         if (!targetBlockState.stringId.contains("type=bottom") && !targetBlockState.stringId.contains("type=top")) {
             return;
         }
-        int deltaX = placingBlockPosition.getGlobalX() - selectedBlockPosition.getGlobalX();
-        int deltaZ = placingBlockPosition.getGlobalZ() - selectedBlockPosition.getGlobalZ();
         int deltaY = placingBlockPosition.getGlobalY() - selectedBlockPosition.getGlobalY();
 
         String[] blockStateId = targetBlockState.stringId.split("=");
         String orientation = blockStateId[blockStateId.length - 1];
         System.out.println("old orientation: " + orientation);
-        if (deltaX != 0 || deltaZ != 0) {
-            System.out.println("Side");
-        }
-        if (deltaY != 0) {
-            System.out.println("Top/bottom");
-            if (deltaY < 0) {
-                System.out.println("bottom!");
-                orientation = "top";
-            }
-            if (deltaY > 0) {
-                System.out.println("top!");
-                orientation = "bottom";
-            }
-        }
+        orientation = determineOrientation(deltaY, orientation);
         System.out.println("new orientation:" + orientation);
-        targetBlockStateRef.set(changeState(targetBlockState, orientation));
+        targetBlockStateRef.set(fetchNewState(targetBlockState, orientation));
+    }
+
+    @Unique
+    private String determineOrientation(int deltaY, String originalOrientation) {
+        if (deltaY == 0) {
+            System.out.println("side!");
+            return originalOrientation;
+        }
+        System.out.println("Top/bottom");
+        if (deltaY < 0) {
+            System.out.println("bottom!");
+            return "top";
+        }
+        System.out.println("top!");
+        return "bottom";
     }
 }

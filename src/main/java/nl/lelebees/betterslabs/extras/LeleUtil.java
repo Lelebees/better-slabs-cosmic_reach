@@ -3,7 +3,7 @@ package nl.lelebees.betterslabs.extras;
 import finalforeach.cosmicreach.world.blocks.BlockState;
 
 public class LeleUtil {
-    public static BlockState changeState(BlockState blockState, String newOrientation) {
+    public static BlockState fetchNewState(BlockState blockState, String newOrientation) {
         String[] blockStateId = blockState.stringId.split("=");
         StringBuilder stateIdBuilder = new StringBuilder();
         for (String string : blockStateId) {
@@ -13,9 +13,6 @@ public class LeleUtil {
             }
             stateIdBuilder.append(string).append("=");
         }
-
-        String saveKey = blockState.getBlockId() + "[" + stateIdBuilder + "]";
-        blockState = BlockState.getInstance(saveKey);
-        return blockState;
+        return BlockState.getInstance(blockState.getBlockId() + "[" + stateIdBuilder + "]");
     }
 }
