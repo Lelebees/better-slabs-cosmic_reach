@@ -4,7 +4,6 @@ package nl.lelebees.betterslabs.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.world.BlockPosition;
 import finalforeach.cosmicreach.world.BlockSelection;
@@ -14,22 +13,20 @@ import nl.lelebees.betterslabs.extras.ViewDirection;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 import static nl.lelebees.betterslabs.extras.LeleUtil.fetchNewState;
 
 @Mixin(BlockSelection.class)
 public class BlockPlacementMixin {
 
-    @Inject(method = "placeBlock", at = @At("HEAD"))
-    private void verticalSlabs(World world, BlockState targetBlockState, BlockPosition blockPos, double timeSinceLastInteract, CallbackInfo ci, @Local(argsOnly = true) LocalRef<BlockState> blockStateLocalRef) {
-        BlockState blockState = blockStateLocalRef.get();
-        if (!blockState.stringId.contains("type=vertical")) {
-            return;
+    @ModifyArg(method = "raycast", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/BlockSelection;placeBlock(Lfinalforeach/cosmicreach/world/World;Lfinalforeach/cosmicreach/world/blocks/BlockState;Lfinalforeach/cosmicreach/world/BlockPosition;D)V"), index = 1)
+    private BlockState adjustBlockstate(BlockState targetBlockState) {
+        if (!targetBlockState.stringId.contains("type=vertical")) {
+            return targetBlockState;
         }
         String newOrientation = "vertical" + ViewDirection.getViewDirection(InGame.getLocalPlayer().getEntity()).getOrientation();
-        blockStateLocalRef.set(fetchNewState(blockState, newOrientation));
+        return fetchNewState(targetBlockState, newOrientation);
     }
 
     @WrapOperation(method = "raycast", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/BlockSelection;placeBlock(Lfinalforeach/cosmicreach/world/World;Lfinalforeach/cosmicreach/world/blocks/BlockState;Lfinalforeach/cosmicreach/world/BlockPosition;D)V"))
