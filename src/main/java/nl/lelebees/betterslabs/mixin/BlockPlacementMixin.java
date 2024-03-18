@@ -1,49 +1,46 @@
 package nl.lelebees.betterslabs.mixin;
 
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.world.BlockPosition;
 import finalforeach.cosmicreach.world.BlockSelection;
-import finalforeach.cosmicreach.world.World;
 import finalforeach.cosmicreach.world.blocks.BlockState;
-import nl.lelebees.betterslabs.extras.ViewDirection;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import static nl.lelebees.betterslabs.extras.LeleUtil.fetchNewState;
+import static nl.lelebees.betterslabs.extras.ViewDirection.getViewDirection;
 
 @Mixin(BlockSelection.class)
 public class BlockPlacementMixin {
 
-    @ModifyArg(method = "raycast", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/BlockSelection;placeBlock(Lfinalforeach/cosmicreach/world/World;Lfinalforeach/cosmicreach/world/blocks/BlockState;Lfinalforeach/cosmicreach/world/BlockPosition;D)V"), index = 1)
-    private BlockState adjustBlockstate(BlockState targetBlockState) {
+    @ModifyVariable(method = "placeBlock", at = @At("HEAD"), argsOnly = true)
+    private BlockState adjustBlockstateVertical(BlockState targetBlockState) {
         if (!targetBlockState.stringId.contains("type=vertical")) {
             return targetBlockState;
         }
-        String newOrientation = "vertical" + ViewDirection.getViewDirection(InGame.getLocalPlayer().getEntity()).getOrientation();
+        String newOrientation = "vertical" + getViewDirection(InGame.getLocalPlayer().getEntity()).getDirectionString();
         return fetchNewState(targetBlockState, newOrientation);
     }
 
-    @WrapOperation(method = "raycast", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/BlockSelection;placeBlock(Lfinalforeach/cosmicreach/world/World;Lfinalforeach/cosmicreach/world/blocks/BlockState;Lfinalforeach/cosmicreach/world/BlockPosition;D)V"))
-    private void horizontalSlabs(BlockSelection instance, World world, BlockState targetBlockState, BlockPosition targetBlockPos, double timeSinceBlockModify, Operation<Void> original, @Local(name = "breakingBlockPos") BlockPosition selectedBlockPosition) {
+    @ModifyArg(method = "raycast", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/BlockSelection;placeBlock(Lfinalforeach/cosmicreach/world/World;Lfinalforeach/cosmicreach/world/blocks/BlockState;Lfinalforeach/cosmicreach/world/BlockPosition;D)V"), index = 1)
+    private BlockState adjustBlockstateHorizontal(BlockState targetBlockState, @Local(name = "breakingBlockPos") BlockPosition selectedBlockPosition, @Local(name = "placingBlockPos") BlockPosition targetBlockPosition) {
         // TODO: If the face is side, place the slab corresponding to the half of the face the player is looking at (top half > top slab, bottom half > bottom slab)
         if (!targetBlockState.stringId.contains("type=bottom") && !targetBlockState.stringId.contains("type=top")) {
-            original.call(instance, world, targetBlockState, targetBlockPos, timeSinceBlockModify);
-            return;
+            return targetBlockState;
         }
-        int deltaY = targetBlockPos.getGlobalY() - selectedBlockPosition.getGlobalY();
+        int deltaY = targetBlockPosition.getGlobalY() - selectedBlockPosition.getGlobalY();
 
         String[] blockStateId = targetBlockState.stringId.split("=");
         String orientation = blockStateId[blockStateId.length - 1];
-        orientation = determineOrientation(deltaY, orientation);
-        original.call(instance, world, fetchNewState(targetBlockState, orientation), targetBlockPos, timeSinceBlockModify);
+        return fetchNewState(targetBlockState, determineOrientation(deltaY, orientation));
     }
 
+    //TODO: move to util?
     @Unique
     private String determineOrientation(int deltaY, String originalOrientation) {
         if (deltaY == 0) {

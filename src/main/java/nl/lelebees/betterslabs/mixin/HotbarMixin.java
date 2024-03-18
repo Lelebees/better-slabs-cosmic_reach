@@ -21,7 +21,7 @@ public class HotbarMixin {
         if (!targetBlock.stringId.contains("type=vertical")) {
             return;
         }
-        String orientation = "vertical" + ViewDirection.WEST.getOrientation();
+        String orientation = "vertical" + ViewDirection.WEST.getDirectionString();
         blockStateLocalRef.set(fetchNewState(targetBlock, orientation));
     }
 }

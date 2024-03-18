@@ -13,11 +13,11 @@ public enum ViewDirection {
     UP("PosY", POS_Y),
     DOWN("NegY", NEG_Y);
 
-    private final String orientation;
+    private final String directionString;
     private final Direction direction;
 
-    ViewDirection(String orientation, Direction direction) {
-        this.orientation = orientation;
+    ViewDirection(String directionString, Direction direction) {
+        this.directionString = directionString;
         this.direction = direction;
     }
 
@@ -25,8 +25,8 @@ public enum ViewDirection {
         return direction;
     }
 
-    public String getOrientation() {
-        return orientation;
+    public String getDirectionString() {
+        return directionString;
     }
 
     public static ViewDirection getViewDirection(Entity entity) {

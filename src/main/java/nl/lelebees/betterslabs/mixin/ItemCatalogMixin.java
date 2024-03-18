@@ -15,7 +15,7 @@ public class ItemCatalogMixin {
 
     @WrapOperation(method = "<init>", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/items/ItemCatalog;addItemStack(Lfinalforeach/cosmicreach/items/ItemStack;)Z"))
     private boolean excludeMultipleVerticalSlabs(ItemCatalog instance, ItemStack itemStack, Operation<Boolean> original, @Local BlockState state) {
-        if (state.stringId.contains("type=vertical") && !state.stringId.contains(ViewDirection.WEST.getOrientation())) {
+        if (state.stringId.contains("type=vertical") && !state.stringId.contains(ViewDirection.WEST.getDirectionString())) {
             return false;
         }
         return original.call(instance, itemStack);
